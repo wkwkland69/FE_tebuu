@@ -12,7 +12,7 @@ const SignIn: React.FC = () => {
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       const response = await fetch('http://localhost:5173/api/auth/signin', {
         method: 'POST',
@@ -59,11 +59,10 @@ const SignIn: React.FC = () => {
             <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
               <span className="mb-1.5 block font-medium">Start for free</span>
               <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
-                Sign In to TailAdmin
+                Sign In - Tebuu
               </h2>
-
-              {error && <p className="text-red-600">{error}</p>} {/* Menampilkan error */}
-
+              {error && <p className="text-red-600">{error}</p>}{' '}
+              {/* Menampilkan error */}
               <form onSubmit={handleSignIn}>
                 <div className="mb-4">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">

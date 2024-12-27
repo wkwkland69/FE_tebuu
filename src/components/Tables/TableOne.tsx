@@ -8,43 +8,48 @@ import BrandFive from '../../images/brand/brand-05.svg';
 const brandData: BRAND[] = [
   {
     logo: BrandOne,
-    name: 'Google',
+    name: 'Truck#3',
     visitors: 3.5,
     revenues: '5,768',
     sales: 590,
     conversion: 4.8,
+    driver: 'Juanda',
   },
   {
     logo: BrandTwo,
-    name: 'Twitter',
+    name: 'Truck#2',
     visitors: 2.2,
     revenues: '4,635',
     sales: 467,
     conversion: 4.3,
+    driver: 'Aviesena',
   },
   {
     logo: BrandThree,
-    name: 'Github',
+    name: 'Truck#5',
     visitors: 2.1,
     revenues: '4,290',
     sales: 420,
     conversion: 3.7,
+    driver: 'Pandu',
   },
   {
     logo: BrandFour,
-    name: 'Vimeo',
+    name: 'Truck#1',
     visitors: 1.5,
     revenues: '3,580',
     sales: 389,
     conversion: 2.5,
+    driver: 'Izaaz',
   },
   {
     logo: BrandFive,
-    name: 'Facebook',
+    name: 'Truck#4',
     visitors: 3.5,
     revenues: '6,768',
     sales: 390,
     conversion: 4.2,
+    driver: 'Juanda2',
   },
 ];
 
@@ -64,7 +69,7 @@ const TableOne = () => {
           </div>
           <div className="p-2.5 text-center xl:p-5">
             <h5 className="text-sm font-medium uppercase xsm:text-base">
-              Visitors
+              Weight
             </h5>
           </div>
           <div className="p-2.5 text-center xl:p-5">
@@ -79,7 +84,7 @@ const TableOne = () => {
           </div>
           <div className="hidden p-2.5 text-center sm:block xl:p-5">
             <h5 className="text-sm font-medium uppercase xsm:text-base">
-              Conversion
+              Driver
             </h5>
           </div>
         </div>
@@ -103,7 +108,9 @@ const TableOne = () => {
             </div>
 
             <div className="flex items-center justify-center p-2.5 xl:p-5">
-              <p className="text-black dark:text-white">{brand.visitors}K</p>
+              <p className="text-black dark:text-white">
+                <span className="text-red-500">{brand.visitors} KG</span>
+              </p>
             </div>
 
             <div className="flex items-center justify-center p-2.5 xl:p-5">
@@ -115,7 +122,9 @@ const TableOne = () => {
             </div>
 
             <div className="hidden items-center justify-center p-2.5 sm:flex xl:p-5">
-              <p className="text-meta-5">{brand.conversion}%</p>
+              <p className="text-blue-500 dark:text-blue-300">
+                {brand.driver || 'Juanda'}
+              </p>
             </div>
           </div>
         ))}

@@ -16,23 +16,22 @@ const SignUp: React.FC = () => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setError('Passwords do not match');
       return;
     }
 
     try {
-      const response = await fetch('http://localhost:5173/api/auth/signup', {
+      const response = await fetch('http://localhost:5000/api/auth/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ name, email, password }),
       });
-      
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Sign up failed');
+        const errorData = await response.text();
+        throw new Error(errorData || 'Sign up failed');
       }
 
       const data = await response.json();
@@ -64,13 +63,12 @@ const SignUp: React.FC = () => {
 
           <div className="w-full border-stroke dark:border-strokedark xl:w-1/2 xl:border-l-2">
             <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
-              <span className="mb-1.5 block font-medium">Start for free</span>
+              {/* <span className="mb-1.5 block font-medium">Start for free</span> */}
               <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
-                Sign Up to TailAdmin
+                Sign Up - Tebuu
               </h2>
-
-              {error && <p className="text-red-600">{error}</p>} {/* Menampilkan error */}
-
+              {error && <p className="text-red-600">{error}</p>}{' '}
+              {/* Menampilkan error */}
               <form onSubmit={handleSignUp}>
                 <div className="mb-4">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">

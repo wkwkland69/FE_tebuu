@@ -1,5 +1,6 @@
 import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
 
+
 const Camera = () => {
   return (
     <>
