@@ -3,7 +3,7 @@ import LabelA from '../../images/product/product-01.png';
 import LabelB from '../../images/product/product-02.png';
 import LabelC from '../../images/product/product-03.png';
 import LabelD from '../../images/product/product-04.png';
-import LabelE from '../../images/product/product-03.png'
+import LabelE from '../../images/product/product-03.png';
 
 const productData: Product[] = [
   {

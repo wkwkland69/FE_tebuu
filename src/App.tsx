@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation, Navigate } from 'react-router-dom';
 import axios from 'axios';
-
 import Loader from './common/Loader';
 import PageTitle from './components/PageTitle';
 import SignIn from './pages/Authentication/SignIn';
@@ -19,166 +18,180 @@ import Alerts from './pages/UiElements/Alerts';
 import Buttons from './pages/UiElements/Buttons';
 import DefaultLayout from './layout/DefaultLayout';
 import InputTebu from './pages/Driver Input/DriverInput';
+import DropdownUser from './components/Header/DropdownUser'; // Import komponen DropdownUser
+
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false); // State untuk autentikasi
   const { pathname } = useLocation();
 
-  // State untuk menyimpan data Total Tebu dari Flask API
-  const [totalTebu, setTotalTebu] = useState<number | null>(null);
-
-  // Memanggil API Flask saat komponen dimount
+  // Mengecek status autentikasi dari localStorage saat aplikasi pertama kali dimuat
   useEffect(() => {
-    axios.get('http://127.0.0.1:5000/total_tebu') // Mengambil total tebu
-      .then(response => {
-        setTotalTebu(response.data.total_tebu);  // Update state dengan total tebu dari API Flask
-      })
-      .catch(error => {
-        console.error('Error fetching total tebu:', error);
-      });
-  }, []);
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
-
-  useEffect(() => {
+    const authStatus = localStorage.getItem('isAuthenticated');
+    if (authStatus === 'true') {
+      setIsAuthenticated(true);
+    }
     setTimeout(() => setLoading(false), 1000);
   }, []);
+
+  const handleLogin = () => {
+    setIsAuthenticated(true); // Set status autentikasi ke true saat login
+    localStorage.setItem('isAuthenticated', 'true'); // Simpan status di localStorage
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false); // Set status autentikasi ke false saat logout
+    localStorage.removeItem('isAuthenticated'); // Hapus status autentikasi dari localStorage
+  };
 
   return loading ? (
     <Loader />
   ) : (
     <DefaultLayout>
-      {/* Menampilkan total tebu dari API Flask */}
-      <h2 className="text-center my-4">Total Tebu yang sudah di-scan: {totalTebu !== null ? totalTebu : 'Loading...'}</h2>
-
+      {/* <DropdownUser onLogout={handleLogout} />{' '} */}
+      {/* Pass handleLogout ke DropdownUser */}
       <Routes>
-        <Route
-          index
-          element={
-            <>
-              <PageTitle title="eCommerce Dashboard | Tebuu - Tailwind CSS Admin Dashboard Template" />
-              <ECommerce />
-            </>
-          }
-        />
-        <Route
-          path="/calendar"
-          element={
-            <>
-              <PageTitle title="Calendar | Tebuu - Tailwind CSS Admin Dashboard Template" />
-              <Calendar />
-            </>
-          }
-        />
-        <Route
-          path="/camera"
-          element={
-            <>
-              <PageTitle title="Calendar | Tebuu - Tailwind CSS Admin Dashboard Template" />
-              <Camera />
-            </>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <>
-              <PageTitle title="Profile | Tebuu - Tailwind CSS Admin Dashboard Template" />
-              <Profile />
-            </>
-          }
-        />
-        <Route
-          path="/forms/form-elements"
-          element={
-            <>
-              <PageTitle title="Form Elements | Tebuu - Tailwind CSS Admin Dashboard Template" />
-              <FormElements />
-            </>
-          }
-        />
-        <Route
-          path="/forms/form-layout"
-          element={
-            <>
-              <PageTitle title="Form Layout | Tebuu - Tailwind CSS Admin Dashboard Template" />
-              <FormLayout />
-            </>
-          }
-        />
-        <Route
-          path="/tables"
-          element={
-            <>
-              <PageTitle title="Tables | Tebuu - Tailwind CSS Admin Dashboard Template" />
-              <Tables />
-            </>
-          }
-        />
-        <Route
-          path="/settings"
-          element={
-            <>
-              <PageTitle title="Settings | Tebuu - Tailwind CSS Admin Dashboard Template" />
-              <Settings />
-            </>
-          }
-        />
-        <Route
-          path="/chart"
-          element={
-            <>
-              <PageTitle title="Basic Chart | Tebuu - Tailwind CSS Admin Dashboard Template" />
-              <Chart />
-            </>
-          }
-        />
-        <Route
-          path="/ui/alerts"
-          element={
-            <>
-              <PageTitle title="Alerts | Tebuu - Tailwind CSS Admin Dashboard Template" />
-              <Alerts />
-            </>
-          }
-        />
-        <Route
-          path="/ui/buttons"
-          element={
-            <>
-              <PageTitle title="Buttons | Tebuu - Tailwind CSS Admin Dashboard Template" />
-              <Buttons />
-            </>
-          }
-        />
-        <Route
-          path="/auth/signin"
-          element={
-            <>
-              <PageTitle title="Signin | Tebuu - Tailwind CSS Admin Dashboard Template" />
-              <SignIn />
-            </>
-          }
-        />
-        <Route
-          path="/driver/inputdata"
-          element={
-            <>
-              <PageTitle title="Input Data | Tebuu - Tailwind CSS Admin Dashboard Template" />
-              <InputTebu />
-            </>
-          }
-        />
-        <Route
-          path="/auth/signup"
-          element={
-            <>
-              <PageTitle title="Signup | Tebuu - Tailwind CSS Admin Dashboard Template" />
-              <SignUp />
-            </>
-          }
-        />
+        {/* Jika belum login, arahkan ke halaman Sign In */}
+        {!isAuthenticated ? (
+          <>
+            <Route
+              path="/auth/signin"
+              element={
+                <>
+                  <PageTitle title="Signin | Tebuu - Tailwind CSS Admin Dashboard Template" />
+                  <SignIn onLogin={handleLogin} />{' '}
+                  {/* Pass handleLogin to SignIn */}
+                </>
+              }
+            />
+            <Route
+              path="/auth/signup"
+              element={
+                <>
+                  <PageTitle title="Signup | Tebuu - Tailwind CSS Admin Dashboard Template" />
+                  <SignUp />
+                </>
+              }
+            />
+            <Route path="*" element={<Navigate to="/auth/signin" />} />{' '}
+            {/* Redirect ke Sign In */}
+          </>
+        ) : (
+          <>
+            <Route
+              index
+              element={
+                <>
+                  <PageTitle title="eCommerce Dashboard | Tebuu - Tailwind CSS Admin Dashboard Template" />
+                  <ECommerce />
+                </>
+              }
+            />
+            <Route
+              path="/calendar"
+              element={
+                <>
+                  <PageTitle title="Calendar | Tebuu - Tailwind CSS Admin Dashboard Template" />
+                  <Calendar />
+                </>
+              }
+            />
+            <Route
+              path="/camera"
+              element={
+                <>
+                  <PageTitle title="Camera | Tebuu - Tailwind CSS Admin Dashboard Template" />
+                  <Camera />
+                </>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <>
+                  <PageTitle title="Profile | Tebuu - Tailwind CSS Admin Dashboard Template" />
+                  <Profile />
+                </>
+              }
+            />
+            <Route
+              path="/forms/form-elements"
+              element={
+                <>
+                  <PageTitle title="Form Elements | Tebuu - Tailwind CSS Admin Dashboard Template" />
+                  <FormElements />
+                </>
+              }
+            />
+            <Route
+              path="/forms/form-layout"
+              element={
+                <>
+                  <PageTitle title="Form Layout | Tebuu - Tailwind CSS Admin Dashboard Template" />
+                  <FormLayout />
+                </>
+              }
+            />
+            <Route
+              path="/tables"
+              element={
+                <>
+                  <PageTitle title="Tables | Tebuu - Tailwind CSS Admin Dashboard Template" />
+                  <Tables />
+                </>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <>
+                  <PageTitle title="Settings | Tebuu - Tailwind CSS Admin Dashboard Template" />
+                  <Settings />
+                </>
+              }
+            />
+            <Route
+              path="/chart"
+              element={
+                <>
+                  <PageTitle title="Basic Chart | Tebuu - Tailwind CSS Admin Dashboard Template" />
+                  <Chart />
+                </>
+              }
+            />
+            <Route
+              path="/ui/alerts"
+              element={
+                <>
+                  <PageTitle title="Alerts | Tebuu - Tailwind CSS Admin Dashboard Template" />
+                  <Alerts />
+                </>
+              }
+            />
+            <Route
+              path="/ui/buttons"
+              element={
+                <>
+                  <PageTitle title="Buttons | Tebuu - Tailwind CSS Admin Dashboard Template" />
+                  <Buttons />
+                </>
+              }
+            />
+            <Route
+              path="/driver/inputdata"
+              element={
+                <>
+                  <PageTitle title="Input Data | Tebuu - Tailwind CSS Admin Dashboard Template" />
+                  <InputTebu />
+                </>
+              }
+            />
+            <Route
+              path="/auth/signin"
+              element={<Navigate to="/" />} // Redirect jika sudah login
+            />
+          </>
+        )}
       </Routes>
     </DefaultLayout>
   );

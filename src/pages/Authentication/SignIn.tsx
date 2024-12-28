@@ -4,7 +4,11 @@ import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import LogoDark from '../../images/logo/logo-dark.svg';
 import Logo from '../../images/logo/logo.svg';
 
-const SignIn: React.FC = () => {
+interface SignInProps {
+  onLogin: () => void;
+}
+
+const SignIn: React.FC<SignInProps> = ({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -14,7 +18,7 @@ const SignIn: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:5173/api/auth/signin', {
+      const response = await fetch('http://localhost:5000/api/auth/signin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -29,7 +33,8 @@ const SignIn: React.FC = () => {
 
       const data = await response.json();
       console.log('Sign in successful:', data);
-      navigate('/'); // Navigasi setelah berhasil
+      onLogin();
+      navigate('/');
     } catch (err: any) {
       setError(err.message);
     }
@@ -62,7 +67,6 @@ const SignIn: React.FC = () => {
                 Sign In - Tebuu
               </h2>
               {error && <p className="text-red-600">{error}</p>}{' '}
-              {/* Menampilkan error */}
               <form onSubmit={handleSignIn}>
                 <div className="mb-4">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">

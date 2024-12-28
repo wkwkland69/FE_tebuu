@@ -6,6 +6,7 @@ import { CctvIcon } from '../Icons/CctvIcon';
 import { CalendarCogIcon } from '../Icons/CalendarIcon';
 import { UserIcon } from '../Icons/UserIcon';
 
+
 interface SidebarProps {
   sidebarOpen: boolean;
   setSidebarOpen: (arg: boolean) => void;
@@ -201,13 +202,14 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
               {/* <!-- Menu Item Calendar --> */}
               <li>
-              <NavLink
+                <NavLink
                   to="/calendar"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
                     pathname.includes('camera') && 'bg-graydark dark:bg-meta-4'
                   }`}
                 >
-                  <CalendarCogIcon /> {/* Menggantikan SVG dengan komponen CctvIcon */}
+                  <CalendarCogIcon />{' '}
+                  {/* Menggantikan SVG dengan komponen CctvIcon */}
                   Calendar
                 </NavLink>
                 <NavLink
@@ -224,7 +226,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
               {/* <!-- Menu Item Profile --> */}
               <li>
-              <NavLink
+                <NavLink
                   to="/profile"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
                     pathname.includes('camera') && 'bg-graydark dark:bg-meta-4'
