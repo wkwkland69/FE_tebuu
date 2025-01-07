@@ -2,14 +2,16 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import ClickOutside from '../ClickOutside';
 import UserOne from '../../images/user/user-01.png';
+import { useAuth } from '../../context/AuthContext';
 
 // Define the props interface
 interface DropdownUserProps {
   onLogout: () => void; // Define the onLogout prop type
 }
 
-const DropdownUser: React.FC<DropdownUserProps> = ({ onLogout }) => {
+const DropdownUser: React.FC<DropdownUserProps> = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { logout } = useAuth();
 
   return (
     <ClickOutside onClick={() => setDropdownOpen(false)} className="relative">
@@ -124,7 +126,7 @@ const DropdownUser: React.FC<DropdownUserProps> = ({ onLogout }) => {
               </Link>
             </li>
           </ul>
-          <button onClick={onLogout}>Log Out</button>
+          <button onClick={logout}>Log Out</button>
         </div>
       )}
     </ClickOutside>

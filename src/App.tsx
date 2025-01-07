@@ -19,29 +19,19 @@ import Buttons from './pages/UiElements/Buttons';
 import DefaultLayout from './layout/DefaultLayout';
 import InputTebu from './pages/Driver Input/DriverInput';
 import DropdownUser from './components/Header/DropdownUser'; // Import komponen DropdownUser
+import { AuthProvider, useAuth } from './context/AuthContext';
 
 function App() {
-  const [loading, setLoading] = useState<boolean>(true);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false); // State untuk autentikasi
+  const [loading, setLoading] = useState<boolean>(false);
+  const { isAuthenticated, login, logout } = useAuth();
   const { pathname } = useLocation();
 
-  // Mengecek status autentikasi dari localStorage saat aplikasi pertama kali dimuat
-  useEffect(() => {
-    const authStatus = localStorage.getItem('isAuthenticated');
-    if (authStatus === 'true') {
-      setIsAuthenticated(true);
-    }
-    setTimeout(() => setLoading(false), 1000);
-  }, []);
-
   const handleLogin = () => {
-    setIsAuthenticated(true); // Set status autentikasi ke true saat login
-    localStorage.setItem('isAuthenticated', 'true'); // Simpan status di localStorage
+    login();
   };
 
   const handleLogout = () => {
-    setIsAuthenticated(false); // Set status autentikasi ke false saat logout
-    localStorage.removeItem('isAuthenticated'); // Hapus status autentikasi dari localStorage
+    logout();
   };
 
   return loading ? (
