@@ -1,65 +1,39 @@
-import { BRAND } from '../../types/brand';
-import BrandOne from '../../images/brand/brand-01.svg';
-import BrandTwo from '../../images/brand/brand-02.svg';
-import BrandThree from '../../images/brand/brand-03.svg';
-import BrandFour from '../../images/brand/brand-04.svg';
-import BrandFive from '../../images/brand/brand-05.svg';
+import React, { useEffect, useState } from 'react';
 
-const brandData: BRAND[] = [
-  {
-    logo: BrandOne,
-    name: 'Truck#3',
-    visitors: 3.5,
-    revenues: '5,768',
-    sales: 590,
-    conversion: 4.8,
-    driver: 'Juanda',
-  },
-  {
-    logo: BrandTwo,
-    name: 'Truck#2',
-    visitors: 2.2,
-    revenues: '4,635',
-    sales: 467,
-    conversion: 4.3,
-    driver: 'Aviesena',
-  },
-  {
-    logo: BrandThree,
-    name: 'Truck#5',
-    visitors: 2.1,
-    revenues: '4,290',
-    sales: 420,
-    conversion: 3.7,
-    driver: 'Pandu',
-  },
-  {
-    logo: BrandFour,
-    name: 'Truck#1',
-    visitors: 1.5,
-    revenues: '3,580',
-    sales: 389,
-    conversion: 2.5,
-    driver: 'Izaaz',
-  },
-  {
-    logo: BrandFive,
-    name: 'Truck#4',
-    visitors: 3.5,
-    revenues: '6,768',
-    sales: 390,
-    conversion: 4.2,
-    driver: 'Juanda2',
-  },
-];
+// Tipe data leaderboard
+interface LeaderboardDriver {
+  nama_supir: string;
+  plat_nomor: string;
+  total_tebu: number;
+}
 
 const TableOne = () => {
+  const [leaderboard, setLeaderboard] = useState<LeaderboardDriver[]>([]);
+
+  useEffect(() => {
+    const fetchLeaderboard = () => {
+      fetch('/api/leaderboard')
+        .then((res) => res.json())
+        .then((data) => setLeaderboard(data))
+        .catch(() => {
+          setLeaderboard([
+            { nama_supir: 'Budi', plat_nomor: 'AB1234CD', total_tebu: 20000 },
+            { nama_supir: 'Andi', plat_nomor: 'AB5678EF', total_tebu: 15000 },
+            { nama_supir: 'Dewi', plat_nomor: 'AB2222IJ', total_tebu: 17000 },
+            { nama_supir: 'Cici', plat_nomor: 'AB1111GH', total_tebu: 10000 },
+          ]);
+        });
+    };
+    fetchLeaderboard(); // initial fetch
+    const interval = setInterval(fetchLeaderboard, 5000); // fetch setiap 5 detik
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">
         Top Channels
       </h4>
-
       <div className="flex flex-col">
         <div className="grid grid-cols-3 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-5">
           <div className="p-2.5 xl:p-5">
@@ -88,43 +62,34 @@ const TableOne = () => {
             </h5>
           </div>
         </div>
-
-        {brandData.map((brand, key) => (
+        {leaderboard.map((driver, idx) => (
           <div
             className={`grid grid-cols-3 sm:grid-cols-5 ${
-              key === brandData.length - 1
+              idx === leaderboard.length - 1
                 ? ''
                 : 'border-b border-stroke dark:border-strokedark'
             }`}
-            key={key}
+            key={driver.nama_supir}
           >
             <div className="flex items-center gap-3 p-2.5 xl:p-5">
-              <div className="flex-shrink-0">
-                <img src={brand.logo} alt="Brand" />
-              </div>
-              <p className="hidden text-black dark:text-white sm:block">
-                {brand.name}
-              </p>
+              {/* Source: Nama Supir */}
+              <p className="text-black dark:text-white font-medium">{driver.nama_supir}</p>
             </div>
-
             <div className="flex items-center justify-center p-2.5 xl:p-5">
-              <p className="text-black dark:text-white">
-                <span className="text-red-500">{brand.visitors} KG</span>
-              </p>
+              {/* Weight: Total Tebu */}
+              <span className="text-red-500">{driver.total_tebu.toLocaleString()} KG</span>
             </div>
-
             <div className="flex items-center justify-center p-2.5 xl:p-5">
-              <p className="text-meta-3">${brand.revenues}</p>
+              {/* Revenues: Plat Nomor */}
+              <p className="text-meta-3">{driver.plat_nomor}</p>
             </div>
-
             <div className="hidden items-center justify-center p-2.5 sm:flex xl:p-5">
-              <p className="text-black dark:text-white">{brand.sales}</p>
+              {/* Sales: Kosongkan/opsional */}
+              <p className="text-black dark:text-white">-</p>
             </div>
-
             <div className="hidden items-center justify-center p-2.5 sm:flex xl:p-5">
-              <p className="text-blue-500 dark:text-blue-300">
-                {brand.driver || 'Juanda'}
-              </p>
+              {/* Driver: Nama Supir */}
+              <p className="text-blue-500 dark:text-blue-300">{driver.nama_supir}</p>
             </div>
           </div>
         ))}

@@ -102,6 +102,45 @@ app.post('/api/auth/signin', async (req, res) => {
   });
 });
 
+// Endpoint to get batch and quality class counts
+app.get('/api/batch-quality-summary', (req, res) => {
+  const query = `
+    SELECT batch,
+      SUM(quality = 'A') AS A,
+      SUM(quality = 'B') AS B,
+      SUM(quality = 'C') AS C,
+      SUM(quality = 'D') AS D,
+      SUM(quality = 'E') AS E
+    FROM sugarcane_scanned
+    GROUP BY batch
+    ORDER BY batch ASC
+  `;
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching batch quality summary:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    res.json(results);
+  });
+});
+
+// Endpoint: Leaderboard Top Driver
+app.get('/api/leaderboard', (req, res) => {
+  const query = `
+    SELECT nama_supir, plat_nomor, SUM(jumlah_tebu) AS total_tebu
+    FROM sugarcane_entry
+    GROUP BY nama_supir, plat_nomor
+    ORDER BY total_tebu DESC
+  `;
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching leaderboard:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    res.json(results);
+  });
+});
+
 // Run the server
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
