@@ -15,7 +15,7 @@ const ECommerce: React.FC = () => {
   // Memanggil API Flask untuk mendapatkan Total Tebu yang sudah di-scan
   useEffect(() => {
     axios
-      .get('http://127.0.0.1:5000/total_tebu')
+      .get('http://127.0.0.1:5001/total_tebu')
       .then((response) => {
         setTotalTebu(response.data.total_tebu); // Update state dengan total tebu dari API Flask
       })

@@ -48,7 +48,7 @@ function App() {
     <Loader />
   ) : (
     <DefaultLayout>
-      <DropdownUser onLogout={handleLogout} />{' '}
+      {/* <DropdownUser onLogout={handleLogout} />{' '} */}
       {/* Pass handleLogout ke DropdownUser */}
       <Routes>
         {/* Jika belum login, arahkan ke halaman Sign In */}

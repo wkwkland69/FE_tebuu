@@ -1,0 +1,34 @@
+@startuml
+package "FE_Tebuu Frontend" {
+  [SignUp Page]
+  [SignIn Page]
+  [Dashboard]
+  [Driver Input]
+  [Scan QR]
+  [Profile Management]
+  [Settings]
+  [Camera/Scanner]
+}
+
+package "Backend API" {
+  [Auth Service]
+  [Driver Data Service]
+  [QR Code Service]
+  [Dashboard Service]
+  [Notification Service]
+}
+
+[SignUp Page] --> [Auth Service] : signup/signin
+[SignIn Page] --> [Auth Service] : signin
+[Driver Input] --> [Driver Data Service] : input data
+[Driver Input] --> [QR Code Service] : generate QR
+[Scan QR] --> [QR Code Service] : scan QR
+[Scan QR] --> [Driver Data Service] : submit scan
+[Dashboard] --> [Dashboard Service] : fetch stats
+[Profile Management] --> [Auth Service] : update profile
+[Settings] --> [Auth Service] : change password
+[Settings] --> [Notification Service] : preferences
+[Camera/Scanner] --> [Scan QR]
+
+[Frontend] -[#0000FF]-> [Backend API] : REST API (Axios)
+@enduml

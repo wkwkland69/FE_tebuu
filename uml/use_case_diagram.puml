@@ -1,0 +1,40 @@
+@startuml
+left to right direction
+actor User
+actor Driver
+actor Admin
+
+rectangle FE_Tebuu {
+  User -- (Sign Up)
+  User -- (Sign In)
+  User -- (Logout)
+  User -- (View Dashboard)
+  User -- (Edit Profile)
+  User -- (Change Settings)
+  User -- (Scan QR Code)
+  User -- (Receive Notifications)
+  User -- (Upload Profile Picture)
+  User -- (Switch Language)
+  User -- (Switch Theme)
+  User -- (Upload Files)
+
+  Driver -- (Input Driver Data)
+  Driver -- (Generate QR Code)
+  Driver -- (Scan QR Code)
+
+  Admin -- (View All Users)
+  Admin -- (View All Driver Inputs)
+  Admin -- (Manage Settings)
+}
+
+(Sign Up) --> (Sign In) : <<include>>
+(Sign In) --> (View Dashboard)
+(View Dashboard) --> (View Sugarcane Stats)
+(Input Driver Data) --> (Generate QR Code)
+(Scan QR Code) --> (Submit Scan Result)
+(Edit Profile) --> (Upload Profile Picture)
+(Change Settings) --> (Switch Language)
+(Change Settings) --> (Switch Theme)
+(Change Settings) --> (Upload Files)
+
+@enduml

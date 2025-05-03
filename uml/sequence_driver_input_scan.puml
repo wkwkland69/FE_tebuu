@@ -1,0 +1,22 @@
+@startuml
+actor User
+participant "Driver Input Page" as DriverInput
+participant "API Backend" as Backend
+participant "QR Code Generator" as QRGen
+
+User -> DriverInput: Fill driver data
+DriverInput -> DriverInput: Validate data
+DriverInput -> Backend: POST /api/tebu/input
+Backend --> DriverInput: Success + QR data
+DriverInput -> QRGen: Generate QR code
+QRGen --> DriverInput: QR code image
+DriverInput -> User: Show QR code
+
+User -> DriverInput: Scan QR code
+DriverInput -> "Camera/Scanner" : Open camera
+User -> "Camera/Scanner" : Scan QR
+"Camera/Scanner" -> DriverInput: Return scanned data
+DriverInput -> Backend: POST /api/tebu/scan
+Backend --> DriverInput: Scan result (success/error)
+DriverInput -> User: Show result/alert
+@enduml

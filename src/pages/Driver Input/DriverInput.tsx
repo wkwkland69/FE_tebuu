@@ -23,7 +23,7 @@ const InputTebu = () => {
         setQrCode(null); // Reset QR code sebelum membuat yang baru
 
         try {
-            const response = await axios.post('http://localhost:5000/api/tebu/input', data, { responseType: 'blob' });
+            const response = await axios.post('http://localhost:5001/api/tebu/input', data, { responseType: 'blob' });
             const url = URL.createObjectURL(response.data);
             setQrCode(url);
         } catch (err) {
