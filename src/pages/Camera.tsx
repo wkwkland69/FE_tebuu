@@ -49,22 +49,6 @@ const Camera = () => {
 
         {/* Input Kamera dan Tombol */}
         <div className="flex flex-col mt-8 space-y-6">
-          {/* Input Camera */}
-          <div>
-            <label
-              htmlFor="cameraInput"
-              className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Input Camera Name
-            </label>
-            <input
-              type="text"
-              id="cameraInput"
-              className="w-full rounded-lg border border-stroke py-3 px-4 bg-transparent text-black dark:border-form-strokedark dark:bg-form-input dark:text-white outline-none focus:border-primary dark:focus:border-primary"
-              placeholder="Enter camera name"
-            />
-          </div>
-
           {/* Tombol */}
           <div className="flex justify-between space-x-4">
             <button className="w-1/3 rounded-lg bg-blue-500 p-4 text-white hover:bg-blue-600 transition">
