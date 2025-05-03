@@ -1,23 +1,31 @@
 import { ApexOptions } from 'apexcharts';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
 
 interface ChartThreeState {
   series: number[];
 }
 
+const qualityLabels = ['A', 'B', 'C', 'D', 'E'];
+const colorMap = [
+  '#3C50E0', // A
+  '#6577F3', // B
+  '#8FD0EF', // C
+  '#0FADCF', // D
+  '#0FDFCF', // E
+];
+
 const options: ApexOptions = {
   chart: {
     fontFamily: 'Satoshi, sans-serif',
     type: 'donut',
   },
-  colors: ['#3C50E0', '#6577F3', '#8FD0EF', '#0FADCF', '#0FDFCF'],
-  labels: ['Level-1', 'Level-2', 'Level-3', 'Level-4', 'Level-5'],
+  colors: colorMap,
+  labels: ['Quality A', 'Quality B', 'Quality C', 'Quality D', 'Quality E'],
   legend: {
     show: false,
     position: 'bottom',
   },
-
   plotOptions: {
     pie: {
       donut: {
@@ -51,23 +59,37 @@ const options: ApexOptions = {
 
 const ChartThree: React.FC = () => {
   const [state, setState] = useState<ChartThreeState>({
-    series: [55, 34, 12, 56, 10],
+    series: [0, 0, 0, 0, 0],
   });
+  const [percentages, setPercentages] = useState<number[]>([0, 0, 0, 0, 0]);
 
-  const handleReset = () => {
-    setState((prevState) => ({
-      ...prevState,
-      series: [55, 34, 12, 56, 10],
-    }));
-  };
-  handleReset;
+  useEffect(() => {
+    fetch('/api/quality-summary')
+      .then((res) => res.json())
+      .then((data) => {
+        // data: [{quality: 'A', count: 2}, ...]
+        const counts = [0, 0, 0, 0, 0];
+        data.forEach((item: { quality: string; count: number }) => {
+          const idx = qualityLabels.indexOf(item.quality);
+          if (idx !== -1) counts[idx] = item.count;
+        });
+        setState({ series: counts });
+        const total = counts.reduce((a, b) => a + b, 0);
+        setPercentages(total > 0 ? counts.map((c) => Math.round((c / total) * 100)) : [0, 0, 0, 0, 0]);
+      })
+      .catch((err) => {
+        setState({ series: [0, 0, 0, 0, 0] });
+        setPercentages([0, 0, 0, 0, 0]);
+        console.error('Error fetching quality summary:', err);
+      });
+  }, []);
 
   return (
     <div className="sm:px-7.5 col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark xl:col-span-5">
       <div className="mb-3 justify-between gap-4 sm:flex">
         <div>
           <h5 className="text-xl font-semibold text-black dark:text-white">
-            Sugarcane Level Summary (Pie-Chart)
+            Sugarcane Quality Summary (Pie-Chart)
           </h5>
         </div>
         <div>
@@ -119,51 +141,20 @@ const ChartThree: React.FC = () => {
       </div>
 
       <div className="-mx-8 flex flex-wrap items-center justify-start gap-y-3">
-        <div className="sm:w-1/2 w-full px-8">
-          <div className="flex w-full items-center">
-            <span className="mr-2 block h-3 w-full max-w-3 rounded-full bg-primary"></span>
-            <p className="flex w-full justify-between text-sm font-medium text-black dark:text-white">
-              <span> Level-1 </span>
-              <span> 65% </span>
-            </p>
+        {qualityLabels.map((label, idx) => (
+          <div className="sm:w-1/2 w-full px-8" key={label}>
+            <div className="flex w-full items-center">
+              <span
+                className="mr-2 block h-3 w-full max-w-3 rounded-full"
+                style={{ backgroundColor: colorMap[idx] }}
+              ></span>
+              <p className="flex w-full justify-between text-sm font-medium text-black dark:text-white">
+                <span> Quality {label} </span>
+                <span> {percentages[idx]}% </span>
+              </p>
+            </div>
           </div>
-        </div>
-        <div className="sm:w-1/2 w-full px-8">
-          <div className="flex w-full items-center">
-            <span className="mr-2 block h-3 w-full max-w-3 rounded-full bg-[#6577F3]"></span>
-            <p className="flex w-full justify-between text-sm font-medium text-black dark:text-white">
-              <span> Level-2 </span>
-              <span> 34% </span>
-            </p>
-          </div>
-        </div>
-        <div className="sm:w-1/2 w-full px-8">
-          <div className="flex w-full items-center">
-            <span className="mr-2 block h-3 w-full max-w-3 rounded-full bg-[#8FD0EF]"></span>
-            <p className="flex w-full justify-between text-sm font-medium text-black dark:text-white">
-              <span> Level-3 </span>
-              <span> 45% </span>
-            </p>
-          </div>
-        </div>
-        <div className="sm:w-1/2 w-full px-8">
-          <div className="flex w-full items-center">
-            <span className="mr-2 block h-3 w-full max-w-3 rounded-full bg-[#0FADCF]"></span>
-            <p className="flex w-full justify-between text-sm font-medium text-black dark:text-white">
-              <span> Level-4 </span>
-              <span> 12% </span>
-            </p>
-          </div>
-        </div>
-        <div className="sm:w-1/2 w-full px-8">
-          <div className="flex w-full items-center">
-            <span className="mr-2 block h-3 w-full max-w-3 rounded-full bg-[#0FDFCF]"></span>
-            <p className="flex w-full justify-between text-sm font-medium text-black dark:text-white">
-              <span> Level-5 </span>
-              <span> 12% </span>
-            </p>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );

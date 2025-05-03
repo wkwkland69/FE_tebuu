@@ -14,7 +14,24 @@ const TableOne = () => {
     const fetchLeaderboard = () => {
       fetch('/api/leaderboard')
         .then((res) => res.json())
-        .then((data) => setLeaderboard(data))
+        .then((data) => {
+          // Gabungkan driver yang sama (berdasarkan nama_supir)
+          const merged = Object.values(
+            data.reduce((acc: any, curr: LeaderboardDriver) => {
+              if (!acc[curr.nama_supir]) {
+                acc[curr.nama_supir] = { ...curr };
+              } else {
+                acc[curr.nama_supir].total_tebu += curr.total_tebu;
+                // Jika plat_nomor berbeda, bisa ditampilkan semua (opsional)
+                if (!acc[curr.nama_supir].plat_nomor.includes(curr.plat_nomor)) {
+                  acc[curr.nama_supir].plat_nomor += `, ${curr.plat_nomor}`;
+                }
+              }
+              return acc;
+            }, {})
+          ) as LeaderboardDriver[];
+          setLeaderboard(merged);
+        })
         .catch(() => {
           setLeaderboard([
             { nama_supir: 'Budi', plat_nomor: 'AB1234CD', total_tebu: 20000 },

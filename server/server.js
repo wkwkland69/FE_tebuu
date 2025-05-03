@@ -124,6 +124,23 @@ app.get('/api/batch-quality-summary', (req, res) => {
   });
 });
 
+// Endpoint: Pie summary quality sugarcane_scanned (for ChartThree)
+app.get('/api/quality-summary', (req, res) => {
+  const query = `
+    SELECT quality, COUNT(*) AS count
+    FROM sugarcane_scanned
+    WHERE quality IN ('A', 'B', 'C', 'D', 'E')
+    GROUP BY quality
+  `;
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching quality summary:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    res.json(results);
+  });
+});
+
 // Endpoint: Leaderboard Top Driver
 app.get('/api/leaderboard', (req, res) => {
   const query = `
