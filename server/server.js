@@ -153,6 +153,18 @@ app.get('/api/scanned', (req, res) => {
   });
 });
 
+// Endpoint: Total scanned sugarcane (jumlah batch)
+app.get('/api/total-scanned', (req, res) => {
+  const query = 'SELECT COUNT(batch) AS total_scanned FROM sugarcane_scanned';
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching total scanned:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    res.json(results[0]);
+  });
+});
+
 // Run the server
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

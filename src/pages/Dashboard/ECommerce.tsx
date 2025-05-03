@@ -10,9 +10,21 @@ import axios from 'axios';
 import { ScanTextIcon } from '../../components/Icons/ScannedIcon';
 
 const ECommerce: React.FC = () => {
+  const [totalScanned, setTotalScanned] = useState<number | null>(null);
   const [totalTebu, setTotalTebu] = useState<number | null>(null);
 
   // Memanggil API Flask untuk mendapatkan Total Tebu yang sudah di-scan
+  useEffect(() => {
+    fetch('/api/total-scanned')
+      .then((res) => res.json())
+      .then((data) => {
+        setTotalScanned(data.total_scanned);
+      })
+      .catch((error) => {
+        console.error('Error fetching total scanned:', error);
+      });
+  }, []);
+
   useEffect(() => {
     axios
       .get('http://127.0.0.1:5001/total_tebu')
@@ -27,7 +39,7 @@ const ECommerce: React.FC = () => {
   return (
     <>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
-        <CardDataStats title="Total Scanned" total="1981" rate="0.43%" levelUp>
+        <CardDataStats title="Total Scanned" total={totalScanned !== null ? totalScanned.toString() : '...'} rate="0.43%" levelUp>
           <ScanTextIcon />
         </CardDataStats>
         <CardDataStats title="Total Profit" total="$45,2K" rate="4.35%" levelUp>
