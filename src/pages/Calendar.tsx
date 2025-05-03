@@ -1,8 +1,34 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
+
+interface ScannedEvent {
+  id: number;
+  batch: string;
+  quality: string;
+  waktu_scan: string;
+}
 
 const Calendar = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [scannedEvents, setScannedEvents] = useState<ScannedEvent[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    setLoading(true);
+    fetch('/api/scanned')
+      .then((res) => res.json())
+      .then((data) => {
+        console.log('Scanned events fetched:', data); // DEBUG
+        setScannedEvents(data);
+        setLoading(false);
+      })
+      .catch((e) => {
+        setError('Gagal mengambil data kalender dari server');
+        setLoading(false);
+        console.error('Fetch error:', e); // DEBUG
+      });
+  }, []);
 
   const handlePreviousMonth = () => {
     const previousMonth = new Date(currentMonth);
@@ -23,20 +49,40 @@ const Calendar = () => {
 
   const daysInMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
 
-  // Event list
-  const events = [
-    { date: '2024-09-27', title: 'Overview topik dan judul...' },
-    { date: '2024-11-19', title: 'Bimbingan ke-4 di ruangan...' },
-    { date: '2024-12-05', title: 'Integrasi model ML dengan...' },
-    { date: '2024-11-04', title: 'Bimbingan terkait RTSP...' },
-    { date: '2024-10-17', title: 'Bimbingan rutin dan...' },
-    { date: '2024-12-20', title: 'Finalisasi laporan...' },
-  ];
-
-  // Check if a date has an event
-  const getEventForDate = (date) => {
+  // Cek event pada tanggal tertentu dari DB
+  const getEventsForDate = (date: Date) => {
     const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-    return events.find((event) => event.date === formattedDate);
+    // Ambil semua event pada tanggal itu
+    return scannedEvents.filter((event) => event.waktu_scan.startsWith(formattedDate));
+  };
+
+  // Membagi tanggal menjadi minggu-minggu
+  const getCalendarRows = () => {
+    const firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay(); // 0=Sun
+    const totalDays = daysInMonth;
+    const weeks: (Date | null)[][] = [];
+    let currentWeek: (Date | null)[] = [];
+
+    // Padding awal minggu pertama
+    for (let i = 0; i < firstDay; i++) {
+      currentWeek.push(null);
+    }
+
+    for (let day = 1; day <= totalDays; day++) {
+      currentWeek.push(new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day));
+      if (currentWeek.length === 7) {
+        weeks.push(currentWeek);
+        currentWeek = [];
+      }
+    }
+    // Padding akhir jika minggu terakhir tidak penuh
+    if (currentWeek.length > 0) {
+      while (currentWeek.length < 7) {
+        currentWeek.push(null);
+      }
+      weeks.push(currentWeek);
+    }
+    return weeks;
   };
 
   return (
@@ -61,6 +107,9 @@ const Calendar = () => {
         </button>
       </div>
 
+      {loading && <div className="text-center text-blue-500">Loading data kalender...</div>}
+      {error && <div className="text-center text-red-500">{error}</div>}
+
       <div className="w-full max-w-full rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <table className="w-full">
           <thead>
@@ -75,29 +124,39 @@ const Calendar = () => {
             </tr>
           </thead>
           <tbody>
-            <tr className="grid grid-cols-7 text-center">
-              {[...Array(daysInMonth)].map((_, index) => {
-                const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), index + 1);
-                const event = getEventForDate(date);
-                return (
-                  <td
-                    key={index}
-                    className={`h-20 border border-stroke p-1 text-sm dark:border-strokedark ${
-                      event ? 'bg-secondary text-white' : ''
-                    }`}
-                  >
-                    <div className="relative">
-                      <span>{index + 1}</span>
-                      {event && (
-                        <div className="absolute top-0 left-0 w-full text-xs text-center text-white bg-red-500 rounded-md">
-                          {event.title}
-                        </div>
-                      )}
-                    </div>
-                  </td>
-                );
-              })}
-            </tr>
+            {getCalendarRows().map((week, weekIdx) => (
+              <tr key={weekIdx} className="grid grid-cols-7 text-center">
+                {week.map((date, idx) => {
+                  if (!date) {
+                    return <td key={idx} className="h-20 border border-stroke p-1 dark:border-strokedark bg-gray-100"></td>;
+                  }
+                  const events = getEventsForDate(date);
+                  return (
+                    <td
+                      key={idx}
+                      className={`h-20 border border-stroke p-1 text-sm align-top dark:border-strokedark relative ${
+                        events.length > 0 ? 'bg-boxdark text-white' : ''
+                      }`}
+                    >
+                      <div className="relative h-full">
+                        <span className="font-semibold">{date.getDate()}</span>
+                        {events.length > 0 && (
+                          <div className="absolute left-0 top-6 w-full text-xs text-center bg-red-500 rounded-md p-1 overflow-y-auto max-h-12 shadow-lg">
+                            {events.map((ev) => (
+                              <div key={ev.id} className="mb-1 last:mb-0 break-words">
+                                <span className="block">Batch: <b>{ev.batch}</b></span>
+                                <span className="block">Q: <b>{ev.quality.toString()}</b></span>
+                                <span className="block" style={{ fontSize: '0.7em' }}>{ev.waktu_scan.slice(11, 16)}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

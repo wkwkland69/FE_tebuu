@@ -141,6 +141,18 @@ app.get('/api/leaderboard', (req, res) => {
   });
 });
 
+// Endpoint: Get all scanned sugarcane data
+app.get('/api/scanned', (req, res) => {
+  const query = `SELECT id, batch, quality, waktu_scan FROM sugarcane_scanned ORDER BY waktu_scan DESC`;
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching scanned data:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    res.json(results);
+  });
+});
+
 // Run the server
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
