@@ -1,10 +1,52 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import ClickOutside from '../ClickOutside';
+
+function formatJakarta(dateStr: string) {
+  const dt = new Date(dateStr);
+  return new Intl.DateTimeFormat('id-ID', {
+    day: '2-digit', month: '2-digit', year: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+    hour12: false,
+    timeZone: 'Asia/Jakarta',
+  }).format(dt).replace(',', '');
+}
+
+const NOTIF_FORMAT = (batch: string, quality: string, waktu_scan: string) =>
+  `Data masuk: Deteksi Batch ${batch} dengan kualitas ${quality} berhasil di scan dan sudah masuk ke database ${formatJakarta(waktu_scan)} WIB`;
+
 
 const DropdownNotification = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notifying, setNotifying] = useState(true);
+  const [notifications, setNotifications] = useState<{id:string, batch:string, quality:string, waktu_scan:string}[]>([]);
+  const lastIdRef = useRef<string | null>(null);
+
+  // Polling fetch data.json setiap 10 detik
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    const fetchData = async () => {
+      try {
+        const res = await fetch('http://localhost:5001/api/scanned');
+        const scanned = await res.json();
+        if (scanned && Array.isArray(scanned)) {
+          setNotifications(scanned.sort((a:any,b:any)=>Number(b.id)-Number(a.id)));
+          if (scanned.length > 0) {
+            const latestId = scanned[scanned.length-1].id;
+            if (lastIdRef.current && latestId !== lastIdRef.current) {
+              setNotifying(true);
+            }
+            lastIdRef.current = latestId;
+          }
+        }
+      } catch (e) {
+        // handle error
+      }
+    };
+    fetchData();
+    interval = setInterval(fetchData, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <ClickOutside onClick={() => setDropdownOpen(false)} className="relative">
@@ -51,69 +93,24 @@ const DropdownNotification = () => {
             </div>
 
             <ul className="flex h-auto flex-col overflow-y-auto">
-              <li>
-                <Link
-                  className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-                  to="#"
-                >
-                  <p className="text-sm">
-                    <span className="text-black dark:text-white">
-                      Edit your information in a swipe
-                    </span>{' '}
-                    Sint occaecat cupidatat non proident, sunt in culpa qui
-                    officia deserunt mollit anim.
-                  </p>
-
-                  <p className="text-xs">12 May, 2025</p>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-                  to="#"
-                >
-                  <p className="text-sm">
-                    <span className="text-black dark:text-white">
-                      It is a long established fact
-                    </span>{' '}
-                    that a reader will be distracted by the readable.
-                  </p>
-
-                  <p className="text-xs">24 Feb, 2025</p>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-                  to="#"
-                >
-                  <p className="text-sm">
-                    <span className="text-black dark:text-white">
-                      There are many variations
-                    </span>{' '}
-                    of passages of Lorem Ipsum available, but the majority have
-                    suffered
-                  </p>
-
-                  <p className="text-xs">04 Jan, 2025</p>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-                  to="#"
-                >
-                  <p className="text-sm">
-                    <span className="text-black dark:text-white">
-                      There are many variations
-                    </span>{' '}
-                    of passages of Lorem Ipsum available, but the majority have
-                    suffered
-                  </p>
-
-                  <p className="text-xs">01 Dec, 2024</p>
-                </Link>
-              </li>
+              {notifications.length === 0 && (
+                <li className="px-4.5 py-3 text-sm text-gray-400">Tidak ada notifikasi baru</li>
+              )}
+              {notifications.map((notif) => (
+                <li key={notif.id}>
+                  <Link
+                    className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
+                    to="#"
+                  >
+                    <p className="text-sm">
+                      <span className="text-black dark:text-white">
+                        {NOTIF_FORMAT(notif.batch, notif.quality, notif.waktu_scan)}
+                      </span>
+                    </p>
+                    <p className="text-xs">{notif.waktu_scan}</p>
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
         )}
