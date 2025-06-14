@@ -42,6 +42,11 @@ const Calendar = () => {
     setCurrentMonth(nextMonth);
   };
 
+  // Tambahkan fungsi untuk kembali ke hari ini
+  const handleToday = () => {
+    setCurrentMonth(new Date());
+  };
+
   const monthNames = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December',
@@ -90,20 +95,28 @@ const Calendar = () => {
       <Breadcrumb pageName="Calendar" />
 
       <div className="flex items-center justify-between mb-5">
-        <button
-          className="rounded bg-primary px-4 py-2 text-white hover:bg-secondary"
-          onClick={handlePreviousMonth}
-        >
-          Previous
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            className="rounded bg-primary px-4 py-2 text-white hover:bg-secondary"
+            onClick={handlePreviousMonth}
+          >
+            Previous
+          </button>
+          <button
+            className="rounded bg-primary px-4 py-2 text-white hover:bg-secondary"
+            onClick={handleNextMonth}
+          >
+            Next
+          </button>
+        </div>
         <h2 className="text-xl font-semibold">
           {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
         </h2>
         <button
           className="rounded bg-primary px-4 py-2 text-white hover:bg-secondary"
-          onClick={handleNextMonth}
+          onClick={handleToday}
         >
-          Next
+          Today
         </button>
       </div>
 

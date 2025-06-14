@@ -47,7 +47,9 @@ function App() {
   return loading ? (
     <Loader />
   ) : (
-    <DefaultLayout>
+    <DefaultLayout
+      onLogout={handleLogout}
+    >
       {/* <DropdownUser onLogout={handleLogout} />{' '} */}
       {/* Pass handleLogout ke DropdownUser */}
       <Routes>

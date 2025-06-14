@@ -1,0 +1,17 @@
+# Query: jumlah_tebu
+# ContextLines: 1
+
+3 results - 1 file
+
+src/pages/Driver Input/DriverInput.tsx:
+   4  const InputTebu = () => {
+   5:     const [data, setData] = useState({ nama_supir: '', plat_nomor: '', jumlah_tebu: '' });
+   6      const [qrCode, setQrCode] = useState<string | null>(null);
+
+  15          // Validasi input
+  16:         if (!data.nama_supir || !data.plat_nomor || !data.berat_tebu) {
+  17              setError('Semua kolom harus diisi');
+
+  55                  onChange={handleChange} 
+  56:                 value={data.berat_tebu} 
+  57                  placeholder="berat_tebu" 

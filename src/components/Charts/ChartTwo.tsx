@@ -3,6 +3,22 @@ import React, { useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
 
 const options: ApexOptions = {
+  grid: {
+    show: true,
+    borderColor: '#E5E7EB', // warna abu-abu terang agar kontras
+    strokeDashArray: 0,
+    xaxis: {
+      lines: {
+        show: true,
+      },
+    },
+    yaxis: {
+      lines: {
+        show: true,
+      },
+    },
+    position: 'back',
+  },
   colors: ['#3C50E0', '#80CAEE'],
   chart: {
     fontFamily: 'Satoshi, sans-serif',

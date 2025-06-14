@@ -8,6 +8,7 @@ import DarkModeSwitcher from './DarkModeSwitcher';
 const Header = (props: {
   sidebarOpen: string | boolean | undefined;
   setSidebarOpen: (arg0: boolean) => void;
+  onLogout: () => void;
 }) => {
 
   return (
@@ -114,8 +115,7 @@ const Header = (props: {
           </ul>
 
           {/* <!-- User Area --> */}
-          <DropdownUser />
-          
+          <DropdownUser onLogout={props.onLogout} />
           {/* <!-- User Area --> */}
         </div>
       </div>
